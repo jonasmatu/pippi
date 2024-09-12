@@ -106,6 +106,8 @@ def getChainData(filename, cut_all_invalid=None, requested_cols=None, assignment
       if line != [] and line[0] not in ['#',';','!',]: just_comments = False
     ncols = len(lines)
     n_extra_cols = 0
+
+    
     if assignments is not None and assignments.value is not None:
       for index in assignments.value:
         if castable_to_int(index):
@@ -140,6 +142,7 @@ def getChainData(filename, cut_all_invalid=None, requested_cols=None, assignment
     data = np.array(data, dtype=np.float64)
     # Find the lookup keys
     lookup_key = np.arange(data.shape[1])
+
 
     # Compute the derived quantities
     if assignments is not None:
@@ -198,6 +201,8 @@ def getChainData(filename, cut_all_invalid=None, requested_cols=None, assignment
       print("    filename:", filename)
       print("    group:", groupname)
       print()
+
+
 
     # Parse group entry
     groups = groupname.split('/')
@@ -280,6 +285,7 @@ def getChainData(filename, cut_all_invalid=None, requested_cols=None, assignment
       print()
       quit()
 
+
     # Identify any likelihood or multiplicity indicated by the labels.
     if labels:
       likelihood_index = [value for key, value in labels.value.items() if key in permittedLikes]
@@ -313,7 +319,7 @@ def getChainData(filename, cut_all_invalid=None, requested_cols=None, assignment
         data_isvalid.append(np.array(entries[column_names[index]+"_isvalid"], dtype=np.float64))
       lookup_key[index] = index_count
       index_count += 1
-    non_functional_cols = [i for i, elem in enumerate(data) if data[i] != 'functional']
+    non_functional_cols = [i for i, elem in enumerate(data) if any(data[i] != 'functional')]
     if not non_functional_cols:
       print("ERROR: At least one non-function assignment is needed in")
       print("assign_to_pippi_datastream, or a multiplicity or likelihood")
@@ -322,16 +328,18 @@ def getChainData(filename, cut_all_invalid=None, requested_cols=None, assignment
     # Print the raw number of samples in the hdf5 file
     total_samples = data[non_functional_cols[0]].size
     print("  Total samples: ", total_samples)
+
+
     # Fill in the functional columns with zeros.  Note that this uses more memory than doing it after validity
     # cuts, but should actually be faster (I think; haven't actually tested that). It makes the code simpler too.
     for i, elem in enumerate(data):
-      if elem == 'functional':
+      if all(elem == 'functional'):
         data[i] = np.zeros(total_samples, dtype=np.float64)
       else:
         # Do some pruning to deal with cases where the some datasets have extra entries (although this arguably indicates a bug in the sampler)
         data[i] = elem[:total_samples]
     for i, elem in enumerate(data_isvalid):
-      if elem == 'functional':
+      if all(elem == 'functional'):
         data_isvalid[i] = np.ones(total_samples, dtype=np.float64)
       else:
         # Do some pruning to deal with cases where the some datasets have extra entries (although this arguably indicates a bug in the sampler)

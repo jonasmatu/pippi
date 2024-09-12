@@ -57,6 +57,7 @@ def parse(filename):
   # Make a local copy of data_ranges
   dataRanges = {} if not data_ranges.value else dict(data_ranges.value)
 
+  
   # Work out where the parse output is to be located
   if parsedir.value is None:
     # No parse_dir; default to the directory containing chain(s)
@@ -99,6 +100,7 @@ def parse(filename):
       print('  The evidence can only be calculated from an MCMC chain.\n  Skipping evidence...')
       doEvidence.value = False
 
+      
   #Check that flags and match up for quantities selected for plotting
   oneDlist = [] if oneDplots.value is None else oneDplots.value
   twoDlist = [] if twoDplots.value is None else twoDplots.value
@@ -132,6 +134,7 @@ def parse(filename):
   # Parse main chain
   outputBaseFilename = baseFiledir+re.sub(r'.*/|\..?.?.?$', '', mainChain.value)
   doParse(mainArray,lookupKey,outputBaseFilename,setOfRequestedColumns,hdf5_names,dataRanges,all_best_fit_data,nBins,iBins,alt_best_fit)
+
 
   # If a comparison chain is specified, parse it too
   if secChain.value is not None:

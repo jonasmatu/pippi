@@ -26,6 +26,8 @@ from pippi_plot   import *
 def main(arguments):
   #Starting routine
 
+  print("Arguments: ", arguments)
+
   commandLineOptions = { 'probe':probe, 'merge':merge, 'pare':pare, 'parse':parse, 'script':script, 'plot':plot }
 
   if (len(arguments) == 1):
